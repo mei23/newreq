@@ -1,6 +1,6 @@
 import { httpAgent, httpsAgent } from './agent';
 import { inspect } from 'util';
-import superagent from 'superagent';
+import * as superagent from 'superagent';
 
 async function main(url: string) {
 	const res = await superagent
