@@ -10,6 +10,7 @@ async function main(url: string) {
 		responseType: 'json',
 		timeout: 5 * 1000,
 		agent: url.startsWith('https:') ? httpsAgent : httpAgent,
+		retry: 0,	// デフォルトでリトライするようになってる
 		throwHttpErrors: false,
 	}).catch((error: any) => {
 		throw `name=${error.name} message=${error.message} type=${error.type} code=${error.code}`;
