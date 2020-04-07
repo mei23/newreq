@@ -3,7 +3,7 @@ import { inspect } from 'util';
 import fetch from 'node-fetch';
 
 async function main(url: string) {
-	const res = await fetch(url, {
+	const json = await fetch(url, {
 		headers: {
 			Accept: '*/*',
 		},
@@ -15,7 +15,7 @@ async function main(url: string) {
 			throw `${res.status} ${res.statusText}`;
 			// 404 Not Found
 		} else {
-			return res;
+			return res.json();
 		}
 	}).catch((error: any) => {
 		throw `name=${error.name} message=${error.message} type=${error.type} code=${error.code}`;
@@ -25,6 +25,8 @@ async function main(url: string) {
 	});
 
 	// エラーはそんなに長くないのでそのままthrowしても大丈夫
+
+	console.log(inspect(json));
 }
 
 const args = process.argv.slice(2);

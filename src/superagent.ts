@@ -3,7 +3,7 @@ import { inspect } from 'util';
 import superagent from 'superagent';
 
 async function main(url: string) {
-	await superagent
+	const res = await superagent
 		.get(url)
 		.agent(url.startsWith('https:') ? httpsAgent : httpAgent)
 		.set('Accept', '*/*')
@@ -17,6 +17,9 @@ async function main(url: string) {
 		});
 	
 	// ステータスエラーとかはちょっと長い
+	// レスポンスパースJSONを強制することが出来ないので、非標準のContent-Typeで返ってくる時はカスタムパーサーが必要
+
+	console.log(inspect(res.body));
 }
 
 const args = process.argv.slice(2);

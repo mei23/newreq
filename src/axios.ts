@@ -9,7 +9,7 @@ async function main(url: string) {
 		source.cancel();
 	}, 5000);
 
-	await axios.get(url, {
+	const res = await axios.get(url, {
 		headers: {
 			Accept: '*/*',
 		},
@@ -39,6 +39,8 @@ async function main(url: string) {
 
 		throw error.message;
 	});
+
+	console.log(inspect(res.data));
 }
 
 const args = process.argv.slice(2);
