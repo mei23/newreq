@@ -9,11 +9,13 @@
   "dependencies": {
     "@types/node": "13.11.0",
     "@types/node-fetch": "^2.5.5",
+    "@types/superagent": "^4.1.7",
     "axios": "^0.19.2",
     "http-proxy-agent": "^4.0.1",
     "https-proxy-agent": "^5.0.0",
     "lookup-dns-cache": "^2.1.0",
     "node-fetch": "^2.6.0",
+    "superagent": "^5.2.2",
     "ts-node": "8.6.2",
     "typescript": "3.8.3"
   }
