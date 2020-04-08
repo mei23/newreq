@@ -10,13 +10,13 @@ async function main(url: string) {
 	}, 5000);
 
 	const res = await axios.post(url, {
-			a: 'b',
-		},{
+			data: {
+				a: 'b',
+			},
 			headers: {
 				Accept: '*/*',
 				'Accept-Encoding': 'gzip, deflate'	// 設定してくれてない
 			},
-			
 			timeout: 3 * 1000,	// これは応答待ちにしか効かない
 			cancelToken: source.token,
 			responseType: 'json',

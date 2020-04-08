@@ -15,9 +15,9 @@ async function main(url: string) {
 		timeout: 5 * 1000,
 		agent: url.startsWith('https:') ? httpsAgent : httpAgent,
 		retry: 0,	// デフォルトでリトライするようになってる
-		throwHttpErrors: false,
+		throwHttpErrors: false,	// 400以上をエラーにするか
 	}).catch((error: any) => {
-		// エラーオブジェクトは小さいのでそのままthrowされても大丈夫そう
+		// エラーオブジェクトは小さいのでそのままthrowされても大丈夫そう, でもデフォルトだとエラーのステータスコードさくっと取れないかも
 		throw `name=${error.name} message=${error.message} type=${error.type} code=${error.code}`;
 		// name=RequestError message=ENOTFOUND httpbin.orgx type=undefined code=ENOTFOUND
 		// name=TimeoutError message=Timeout awaiting 'request' for 5000ms type=undefined code=ETIMEDOUT
@@ -30,9 +30,7 @@ async function main(url: string) {
 		} else {
 			return res.body;
 		}
-	})
-
-	// 存在しないドメインとかの場合戻ってくるのが遅い？
+	});
 
 	console.log(inspect(json));
 }
