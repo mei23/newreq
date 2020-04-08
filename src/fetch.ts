@@ -10,6 +10,7 @@ async function main(url: string) {
 		timeout: 3 * 1000,
 		agent: u => u.protocol == 'http:' ? httpAgent : httpsAgent,
 	}).catch((error: any) => {
+		// エラーはそんなに長くないのでそのままthrowしても大丈夫
 		throw `name=${error.name} message=${error.message} type=${error.type} code=${error.code}`;
 		// name=FetchError message=network timeout at: https://example.com:81/ type=request-timeout code=ECONNABORTED
 		// name=FetchError message=request to https://example.comx/ failed, reason: ENOTFOUND example.comx type=system code=ENOTFOUND
@@ -24,7 +25,6 @@ async function main(url: string) {
 		}
 	});
 
-	// エラーはそんなに長くないのでそのままthrowしても大丈夫
 
 	console.log(inspect(json));
 }

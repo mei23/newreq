@@ -9,6 +9,7 @@ async function main(url: string) {
 		.set('Accept', '*/*')
 		.timeout(3 * 1000)
 		.catch(error => {
+			// ステータスエラーとかはそのままthrowされるとちょっと長い
 			throw `name=${error.name} message=${error.message} status=${error.status} code=${error.code}`;
 			// name=Error message=Not Found status=404 statusCode=404 code='ECONNABORTED'
 			// name=Error message=Timeout of 3000ms exceeded status=undefined code='ECONNABORTED'
@@ -16,7 +17,6 @@ async function main(url: string) {
 			// name=Error message=ENOTFOUND example.comx status=undefined code=ENOTFOUND
 		});
 	
-	// ステータスエラーとかはちょっと長い
 	// レスポンスパースJSONを強制することが出来ないので、非標準のContent-Typeで返ってくる時はカスタムパーサーが必要
 
 	console.log(inspect(res.body));

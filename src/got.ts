@@ -13,6 +13,7 @@ async function main(url: string) {
 		retry: 0,	// デフォルトでリトライするようになってる
 		throwHttpErrors: false,
 	}).catch((error: any) => {
+		// エラーオブジェクトは小さいのでそのままthrowされても大丈夫そう
 		throw `name=${error.name} message=${error.message} type=${error.type} code=${error.code}`;
 		// name=RequestError message=ENOTFOUND httpbin.orgx type=undefined code=ENOTFOUND
 		// name=TimeoutError message=Timeout awaiting 'request' for 5000ms type=undefined code=ETIMEDOUT
@@ -27,7 +28,6 @@ async function main(url: string) {
 		}
 	})
 
-	// エラーオブジェクトは小さいのでそのままthrowされても大丈夫そう
 	// 存在しないドメインとかの場合戻ってくるのが遅い？
 
 	console.log(inspect(json));
