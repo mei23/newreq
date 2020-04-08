@@ -4,8 +4,13 @@ import fetch from 'node-fetch';
 
 async function main(url: string) {
 	const json = await fetch(url, {
+		method: 'post',
+		body: JSON.stringify({
+			a: 'b',
+		}),
 		headers: {
 			Accept: '*/*',
+			'Content-Type': 'application/json'
 		},
 		timeout: 3 * 1000,
 		agent: u => u.protocol == 'http:' ? httpAgent : httpsAgent,
@@ -24,7 +29,6 @@ async function main(url: string) {
 			return res.json();
 		}
 	});
-
 
 	console.log(inspect(json));
 }

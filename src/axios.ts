@@ -9,15 +9,18 @@ async function main(url: string) {
 		source.cancel();
 	}, 5000);
 
-	const res = await axios.get(url, {
-		headers: {
-			Accept: '*/*',
-		},
-		timeout: 3 * 1000,	// これは応答待ちにしか効かない
-		cancelToken: source.token,
-		responseType: 'json',
-		httpAgent: httpAgent,
-		httpsAgent: httpsAgent,
+	const res = await axios.post(url, {
+			a: 'b',
+		},{
+			headers: {
+				Accept: '*/*',
+			},
+			
+			timeout: 3 * 1000,	// これは応答待ちにしか効かない
+			cancelToken: source.token,
+			responseType: 'json',
+			httpAgent: httpAgent,
+			httpsAgent: httpsAgent,
 	}).catch((error: AxiosError) => {
 		// 2xx以外はエラーになるがそのままthrowするととっても長い
 		if (error.response) {

@@ -4,10 +4,11 @@ import * as superagent from 'superagent';
 
 async function main(url: string) {
 	const res = await superagent
-		.get(url)
-		.agent(url.startsWith('https:') ? httpsAgent : httpAgent)
+		.post(url)
+		.send({ a: 'b' })
 		.set('Accept', '*/*')
 		.timeout(3 * 1000)
+		.agent(url.startsWith('https:') ? httpsAgent : httpAgent)
 		.catch(error => {
 			// ステータスエラーとかはそのままthrowされるとちょっと長い
 			throw `name=${error.name} message=${error.message} status=${error.status} code=${error.code}`;

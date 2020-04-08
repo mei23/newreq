@@ -3,7 +3,10 @@ import { inspect } from 'util';
 import got from 'got';
 
 async function main(url: string) {
-	const json = await got(url, {
+	const json = await got.post(url, {
+		json: {
+			a: 'b'
+		},
 		headers: {
 			Accept: '*/*',
 		},
