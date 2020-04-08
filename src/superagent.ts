@@ -18,6 +18,7 @@ async function main(url: string) {
 			// name=Error message=ENOTFOUND example.comx status=undefined code=ENOTFOUND
 		});
 	
+	// 'Accept-Encoding': 'gzip, deflate' がデフォルト
 	// レスポンスパースJSONを強制することが出来ないので、非標準のContent-Typeで返ってくる時はカスタムパーサーが必要
 
 	console.log(inspect(res.body));

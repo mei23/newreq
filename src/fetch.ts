@@ -10,7 +10,8 @@ async function main(url: string) {
 		}),
 		headers: {
 			Accept: '*/*',
-			'Content-Type': 'application/json'
+			'Content-Type': 'application/json',
+			// 'Accept-Encoding': 'gzip,deflate', がデフォルト
 		},
 		timeout: 3 * 1000,
 		agent: u => u.protocol == 'http:' ? httpAgent : httpsAgent,

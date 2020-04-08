@@ -14,6 +14,7 @@ async function main(url: string) {
 		},{
 			headers: {
 				Accept: '*/*',
+				'Accept-Encoding': 'gzip, deflate'	// 設定してくれてない
 			},
 			
 			timeout: 3 * 1000,	// これは応答待ちにしか効かない

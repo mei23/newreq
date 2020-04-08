@@ -9,6 +9,7 @@ async function main(url: string) {
 		},
 		headers: {
 			Accept: '*/*',
+			// 'Accept-Encoding': 'gzip, deflate, br', がデフォルト
 		},
 		responseType: 'json',
 		timeout: 5 * 1000,
