@@ -31,9 +31,10 @@ async function main(url: string, path: string) {
 
 	await pipeline(res.body, fs.createWriteStream(path));
 
+	// 可能ならばサイズ比較
 	const actualLength = (await util.promisify(fs.stat)(path)).size;
 
-	if (res.headers.get('accept-encoding') == null && expectedLength != null && expectedLength !== actualLength) {
+	if (res.headers.get('content-encoding') == null && expectedLength != null && expectedLength !== actualLength) {
 		throw `size error: expected: ${expectedLength}, but got ${actualLength}`;
 	}
 }
