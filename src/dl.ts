@@ -25,7 +25,17 @@ async function main(url: string, path: string) {
 
 	if (!res.ok) throw `${res.status} ${res.statusText}`;
 
+	// Content-Lengthがあればとっておく
+	const contentLength = res.headers.get('content-length');
+	const expectedLength = contentLength != null ? Number(contentLength) : null;
+
 	await pipeline(res.body, fs.createWriteStream(path));
+
+	const actualLength = (await util.promisify(fs.stat)(path)).size;
+
+	if (res.headers.get('accept-encoding') == null && expectedLength != null && expectedLength !== actualLength) {
+		throw `size error: expected: ${expectedLength}, but got ${actualLength}`;
+	}
 }
 
 const args = process.argv.slice(2);
