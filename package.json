@@ -16,7 +16,7 @@
     "http-proxy-agent": "^4.0.1",
     "https-proxy-agent": "^5.0.0",
     "lookup-dns-cache": "^2.1.0",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.1",
     "request-promise-native": "^1.0.8",
     "superagent": "^5.3.1",
     "ts-node": "8.10.2",
