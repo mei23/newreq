@@ -13,7 +13,10 @@ async function main(url: string) {
 		},
 		responseType: 'json',
 		timeout: 5 * 1000,
-		agent: url.startsWith('https:') ? httpsAgent : httpAgent,
+		agent: {
+			http: httpAgent,
+			https: httpsAgent,
+		},
 		retry: 0,	// デフォルトでリトライするようになってる
 		throwHttpErrors: false,	// 400以上をエラーにするか
 	}).catch((error: any) => {
