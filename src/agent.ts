@@ -9,14 +9,14 @@ const config = {
 };
 
 export const httpAgent = config.proxy
-	? new HttpProxyAgent(config.proxy)
+	? new HttpProxyAgent(config.proxy) as unknown as http.Agent
 	: new http.Agent({
 		keepAlive: true,
 		keepAliveMsecs: 30 * 1000,
 	});
 
 export const httpsAgent = config.proxy
-	? new HttpsProxyAgent(config.proxy)
+	? new HttpsProxyAgent(config.proxy) as unknown as https.Agent
 	: new https.Agent({
 		keepAlive: true,
 		keepAliveMsecs: 30 * 1000,
