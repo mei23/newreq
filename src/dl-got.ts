@@ -2,24 +2,26 @@ import { httpAgent, httpsAgent } from './agent';
 import { inspect } from 'util';
 import got from 'got';
 import * as Got from 'got';
+import * as fs from 'fs';
+import * as stream from 'stream';
+import * as util from 'util';
 
-async function main(url: string) {
-	const json = await got.post(url, {
-		json: {
-			a: 'b'
-		},
+const pipeline = util.promisify(stream.pipeline);
+
+async function main(url: string, path: string) {
+	const req = await got.stream(url, {
 		headers: {
 			Accept: '*/*',
-			// 'Accept-Encoding': 'gzip, deflate, br', がデフォルト
 		},
-		responseType: 'json',
 		timeout: 5 * 1000,
 		agent: {
 			http: httpAgent,
 			https: httpsAgent,
 		},
 		retry: 0,	// デフォルトでリトライするようになってる
-	}).catch((e: any) => {
+	});
+
+	req.on('error', e => {
 		if (e.name === 'HTTPError') {
 			const statusCode = (e as Got.HTTPError).response.statusCode;
 			const statusMessage = (e as Got.HTTPError).response.statusMessage;
@@ -33,12 +35,13 @@ async function main(url: string) {
 		}
 	});
 
-	console.log(inspect(json));
+	await pipeline(req, fs.createWriteStream(path));
 }
 
 const args = process.argv.slice(2);
 const url = args[0];
+const path = args[1];
 
-main(url).catch(e => {
-	console.log(inspect(e));
-})
+main(url, path).catch(e => {
+	console.log(`error: ${inspect(e)}`);
+});
