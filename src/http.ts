@@ -47,13 +47,12 @@ export async function httpGet(url: string) {
 					buffer.push(Buffer.from(data))
 				});
 
-				res.on('close', () => {
-					if (req.aborted) reject('timeout');
-					if (!res.complete) reject(`terminated`);
+				res.on('aborted', () => {
+					reject(`aborted`);	// タイムアウトと途中で切れた場合にここに来る
 				});
 
 				res.on('error', e => {
-					reject(e);
+					reject(e);	// 来ないはず
 				});
 
 				res.on('end', () => {
