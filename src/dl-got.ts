@@ -9,11 +9,22 @@ import * as util from 'util';
 const pipeline = util.promisify(stream.pipeline);
 
 async function main(url: string, path: string) {
+	const timeout = 5 * 1000;
+	const operationTimeout = 10 * 60 * 1000;
+
 	const req = await got.stream(url, {
 		headers: {
 			Accept: '*/*',
 		},
-		timeout: 5 * 1000,
+		timeout: {
+			lookup: timeout,
+			connect: timeout,
+			secureConnect: timeout,
+			socket: timeout,	// read timeout
+			response: timeout,
+			send: timeout,
+			request: operationTimeout,	// whole operation timeout
+		},
 		agent: {
 			http: httpAgent,
 			https: httpsAgent,
