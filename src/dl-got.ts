@@ -1,10 +1,12 @@
-import { httpAgent, httpsAgent } from './agent';
 import { inspect } from 'util';
 import got from 'got';
 import * as Got from 'got';
 import * as fs from 'fs';
 import * as stream from 'stream';
 import * as util from 'util';
+import { getAgentByUrl } from './agent';
+import * as http from 'http';
+import * as https from 'https';
 
 const pipeline = util.promisify(stream.pipeline);
 
@@ -26,9 +28,16 @@ async function main(url: string, path: string) {
 			send: timeout,
 			request: operationTimeout,	// whole operation timeout
 		},
-		agent: {
-			http: httpAgent,
-			https: httpsAgent,
+		hooks: {
+			beforeRequest: [
+				options => {
+					options.request = (url: URL, opt: http.RequestOptions, callback?: (response: any) => void) => {
+						const requestFunc = url.protocol === 'https:' ? https.request : http.request;
+						opt.agent = getAgentByUrl(url, false); 
+						return requestFunc(url, opt, callback) as http.ClientRequest;
+					};
+				},
+			],
 		},
 		retry: 0,	// デフォルトでリトライするようになってる
 	}).on('response', (res: Got.Response) => {
