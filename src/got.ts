@@ -23,7 +23,9 @@ async function main(url: string) {
 			https: httpsAgent,
 		},
 		retry: 0,	// デフォルトでリトライするようになってる
-	}).on('response', (res: Got.Response) => {
+	});
+	
+	req.on('response', (res: Got.Response) => {
 		const contentLength = res.headers['content-length'];
 		if (contentLength != null) {
 			const size = Number(contentLength);
@@ -32,7 +34,9 @@ async function main(url: string) {
 				req.cancel();
 			}
 		}
-	}).on('downloadProgress', (progress: Got.Progress) => {
+	});
+	
+	req.on('downloadProgress', (progress: Got.Progress) => {
 		if (progress.transferred > maxSize) {
 			console.log(`maxSize exceeded (${progress.transferred} > ${maxSize}) on downloadProgress`);
 			req.cancel();
