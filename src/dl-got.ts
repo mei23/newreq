@@ -34,7 +34,8 @@ async function main(url: string, path: string) {
 					options.request = (url: URL, opt: http.RequestOptions, callback?: (response: any) => void) => {
 						const requestFunc = url.protocol === 'https:' ? https.request : http.request;
 						opt.agent = getAgentByUrl(url, false); 
-						return requestFunc(url, opt, callback) as http.ClientRequest;
+						const clientRequest = requestFunc(url, opt, callback) as http.ClientRequest;
+						return clientRequest;
 					};
 				},
 			],

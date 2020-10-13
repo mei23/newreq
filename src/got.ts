@@ -5,36 +5,7 @@ import * as Got from 'got';
 import * as http from 'http';
 import * as https from 'https';
 
-async function main(url: string) {
-	const timeout = 5 * 1000;
-	const maxSize = 1 * 1024 * 1024;
-
-	const req = got.post(url, {
-		json: {
-			a: 'b'
-		},
-		headers: {
-			Accept: '*/*',
-			// 'Accept-Encoding': 'gzip, deflate, br', がデフォルト
-		},
-		responseType: 'json',
-		timeout,
-		http2: false,
-		hooks: {
-			beforeRequest: [
-				options => {
-					options.request = (url: URL, opt: http.RequestOptions, callback?: (response: any) => void) => {
-						const requestFunc = url.protocol === 'https:' ? https.request : http.request;
-						opt.agent = getAgentByUrl(url, false); 
-						const clientRequest = requestFunc(url, opt, callback) as http.ClientRequest;
-						return clientRequest;
-					};
-				},
-			],
-		},
-		retry: 0,	// デフォルトでリトライするようになってる
-	});
-	
+async function receive(req: Got.CancelableRequest<Got.Response<unknown>>, maxSize: number) {
 	req.on('response', (res: Got.Response) => {
 		const contentLength = res.headers['content-length'];
 		if (contentLength != null) {
@@ -67,9 +38,43 @@ async function main(url: string) {
 		}
 	});
 
+	return res;
+}
+
+async function main(url: string) {
+	const timeout = 5 * 1000;
+	const maxSize = 1 * 1024 * 1024;
+
+	const req = got.post(url, {
+		json: {
+			a: 'b'
+		},
+		headers: {
+			Accept: '*/*',
+			// 'Accept-Encoding': 'gzip, deflate, br', がデフォルト
+		},
+		responseType: 'json',
+		timeout,
+		http2: false,
+		hooks: {
+			beforeRequest: [ hook ],
+		},
+		retry: 0,	// デフォルトでリトライするようになってる
+	});
+	
+	const res = await receive(req, maxSize);
+
 	console.log(inspect(res.body));
 }
 
+function hook(options: Got.NormalizedOptions) {
+	options.request = (url: URL, opt: http.RequestOptions, callback?: (response: any) => void) => {
+		const requestFunc = url.protocol === 'https:' ? https.request : http.request;
+		opt.agent = getAgentByUrl(url, false); 
+		const clientRequest = requestFunc(url, opt, callback) as http.ClientRequest;
+		return clientRequest;
+	};
+}
 const args = process.argv.slice(2);
 const url = args[0];
 
