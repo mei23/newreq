@@ -2,6 +2,9 @@ import { httpAgent, httpsAgent } from './agent';
 import { inspect } from 'util';
 import got from 'got';
 import * as Got from 'got';
+import * as http from 'http';
+import * as https from 'https';
+import http2 = require('http2-wrapper');
 
 async function main(url: string) {
 	const timeout = 5 * 1000;
@@ -21,6 +24,17 @@ async function main(url: string) {
 		agent: {
 			http: httpAgent,
 			https: httpsAgent,
+		},
+		hooks: {
+			beforeRequest: [
+				options => {
+					options.request = (url: URL, opt: http.RequestOptions, callback?: (response: any) => void) => {
+						const requestFunc = options.http2 ? http2.auto : url.protocol === 'https:' ? https.request : http.request;
+						const clientRequest = requestFunc(url, opt, callback) as http.ClientRequest;
+						return clientRequest;
+					};
+				},
+			],
 		},
 		retry: 0,	// デフォルトでリトライするようになってる
 	});

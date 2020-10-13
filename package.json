@@ -14,6 +14,7 @@
     "axios": "^0.19.2",
     "got": "^11.5.1",
     "http-proxy-agent": "^4.0.1",
+    "http2-wrapper": "^1.0.0-beta.5.2",
     "https-proxy-agent": "^5.0.0",
     "lookup-dns-cache": "^2.1.0",
     "node-fetch": "^2.6.1",
