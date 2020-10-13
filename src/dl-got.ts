@@ -11,6 +11,7 @@ const pipeline = util.promisify(stream.pipeline);
 async function main(url: string, path: string) {
 	const timeout = 5 * 1000;
 	const operationTimeout = 10 * 60 * 1000;
+	const maxSize = 1 * 1024 * 1024;
 
 	const req = await got.stream(url, {
 		headers: {
@@ -30,6 +31,24 @@ async function main(url: string, path: string) {
 			https: httpsAgent,
 		},
 		retry: 0,	// デフォルトでリトライするようになってる
+	});
+
+	req.on('response', (res: Got.Response) => {
+		const contentLength = res.headers['content-length'];
+		if (contentLength != null) {
+			const size = Number(contentLength);
+			if (size > maxSize) {
+				console.log(`maxSize exceeded (${size} > ${maxSize}) on response`);
+				req.destroy();
+			}
+		}
+	});
+
+	req.on('downloadProgress', (progress: Got.Progress) => {
+		if (progress.transferred > maxSize) {
+			console.log(`maxSize exceeded (${progress.transferred} > ${maxSize}) on downloadProgress`);
+			req.destroy();
+		}
 	});
 
 	req.on('error', e => {
