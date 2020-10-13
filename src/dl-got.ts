@@ -13,7 +13,7 @@ async function main(url: string, path: string) {
 	const operationTimeout = 10 * 60 * 1000;
 	const maxSize = 1 * 1024 * 1024;
 
-	const req = await got.stream(url, {
+	const req = got.stream(url, {
 		headers: {
 			Accept: '*/*',
 		},
@@ -31,9 +31,7 @@ async function main(url: string, path: string) {
 			https: httpsAgent,
 		},
 		retry: 0,	// デフォルトでリトライするようになってる
-	});
-
-	req.on('response', (res: Got.Response) => {
+	}).on('response', (res: Got.Response) => {
 		const contentLength = res.headers['content-length'];
 		if (contentLength != null) {
 			const size = Number(contentLength);
@@ -42,16 +40,12 @@ async function main(url: string, path: string) {
 				req.destroy();
 			}
 		}
-	});
-
-	req.on('downloadProgress', (progress: Got.Progress) => {
+	}).on('downloadProgress', (progress: Got.Progress) => {
 		if (progress.transferred > maxSize) {
 			console.log(`maxSize exceeded (${progress.transferred} > ${maxSize}) on downloadProgress`);
 			req.destroy();
 		}
-	});
-
-	req.on('error', e => {
+	}).on('error', e => {
 		if (e.name === 'HTTPError') {
 			const statusCode = (e as Got.HTTPError).response.statusCode;
 			const statusMessage = (e as Got.HTTPError).response.statusMessage;
