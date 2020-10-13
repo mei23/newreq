@@ -4,7 +4,10 @@ import got from 'got';
 import * as Got from 'got';
 
 async function main(url: string) {
-	const json = await got.post(url, {
+	const timeout = 5 * 1000;
+	const maxSize = 1 * 1024 * 1024;
+
+	const req = got.post(url, {
 		json: {
 			a: 'b'
 		},
@@ -13,13 +16,31 @@ async function main(url: string) {
 			// 'Accept-Encoding': 'gzip, deflate, br', がデフォルト
 		},
 		responseType: 'json',
-		timeout: 5 * 1000,
+		timeout,
+		http2: false,
 		agent: {
 			http: httpAgent,
 			https: httpsAgent,
 		},
 		retry: 0,	// デフォルトでリトライするようになってる
-	}).catch((e: any) => {
+	}).on('response', (res: Got.Response) => {
+		console.log(res.httpVersion);
+		const contentLength = res.headers['content-length'];
+		if (contentLength != null) {
+			const size = Number(contentLength);
+			if (size > maxSize) {
+				console.log(`maxSize exceeded (${size} > ${maxSize}) on response`);
+				req.cancel();
+			}
+		}
+	}).on('downloadProgress', (progress: Got.Progress) => {
+		if (progress.transferred > maxSize) {
+			console.log(`maxSize exceeded (${progress.transferred} > ${maxSize}) on downloadProgress`);
+			req.cancel();
+		}
+	});
+
+	const res = await req.catch(e => {
 		if (e.name === 'HTTPError') {
 			const statusCode = (e as Got.HTTPError).response.statusCode;
 			const statusMessage = (e as Got.HTTPError).response.statusMessage;
@@ -33,7 +54,7 @@ async function main(url: string) {
 		}
 	});
 
-	console.log(inspect(json));
+	console.log(inspect(res.body));
 }
 
 const args = process.argv.slice(2);
