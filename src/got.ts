@@ -24,7 +24,6 @@ async function main(url: string) {
 		},
 		retry: 0,	// デフォルトでリトライするようになってる
 	}).on('response', (res: Got.Response) => {
-		console.log(res.httpVersion);
 		const contentLength = res.headers['content-length'];
 		if (contentLength != null) {
 			const size = Number(contentLength);
