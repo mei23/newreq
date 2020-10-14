@@ -32,7 +32,7 @@ async function main(url: string, path: string) {
 			beforeRequest: [
 				options => {
 					options.request = (url: URL, opt: http.RequestOptions, callback?: (response: any) => void) => {
-						const requestFunc = url.protocol === 'https:' ? https.request : http.request;
+						const requestFunc = url.protocol === 'http:' ? http.request : https.request;
 						opt.agent = getAgentByUrl(url, false); 
 						const clientRequest = requestFunc(url, opt, callback) as http.ClientRequest;
 						return clientRequest;
@@ -55,17 +55,13 @@ async function main(url: string, path: string) {
 			console.log(`maxSize exceeded (${progress.transferred} > ${maxSize}) on downloadProgress`);
 			req.destroy();
 		}
-	}).on('error', e => {
+	}).on('error', (e: any) => {
 		if (e.name === 'HTTPError') {
 			const statusCode = (e as Got.HTTPError).response.statusCode;
 			const statusMessage = (e as Got.HTTPError).response.statusMessage;
-			throw {
-				name: `StatusError`,
-				statusCode,
-				message: `${statusCode} ${statusMessage}`,
-			};
-		} else {
-			throw e;
+			e.name = `StatusError`;
+			e.statusCode = statusCode;
+			e.message = `${statusCode} ${statusMessage}`;
 		}
 	});
 
