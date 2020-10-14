@@ -4,9 +4,7 @@ import * as Got from 'got';
 import * as fs from 'fs';
 import * as stream from 'stream';
 import * as util from 'util';
-import { getAgentByUrl } from './agent';
-import * as http from 'http';
-import * as https from 'https';
+import { httpAgent, httpsAgent } from './agent';
 
 const pipeline = util.promisify(stream.pipeline);
 
@@ -28,20 +26,16 @@ async function main(url: string, path: string) {
 			send: timeout,
 			request: operationTimeout,	// whole operation timeout
 		},
-		hooks: {
-			beforeRequest: [
-				options => {
-					options.request = (url: URL, opt: http.RequestOptions, callback?: (response: any) => void) => {
-						const requestFunc = url.protocol === 'http:' ? http.request : https.request;
-						opt.agent = getAgentByUrl(url, false); 
-						const clientRequest = requestFunc(url, opt, callback) as http.ClientRequest;
-						return clientRequest;
-					};
-				},
-			],
+		http2: true,
+		agent: {
+			http: httpAgent,
+			https: httpsAgent,
 		},
 		retry: 0,	// デフォルトでリトライするようになってる
 	}).on('response', (res: Got.Response) => {
+		console.log(`httpVersion: ${res.httpVersion}`);
+		console.log(`${inspect(res.timings)}`);
+
 		const contentLength = res.headers['content-length'];
 		if (contentLength != null) {
 			const size = Number(contentLength);

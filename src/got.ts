@@ -1,9 +1,7 @@
-import { getAgentByUrl } from './agent';
+import { httpAgent, httpsAgent } from './agent';
 import { inspect } from 'util';
 import got from 'got';
 import * as Got from 'got';
-import * as http from 'http';
-import * as https from 'https';
 
 async function main(url: string) {
 	const timeout = 5 * 1000;
@@ -19,9 +17,10 @@ async function main(url: string) {
 		},
 		responseType: 'json',
 		timeout,
-		http2: false,
-		hooks: {
-			beforeRequest: [ beforeRequestHook ],
+		http2: true,
+		agent: {
+			http: httpAgent,
+			https: httpsAgent
 		},
 		retry: 0,	// デフォルトでリトライするようになってる
 	});
@@ -39,6 +38,9 @@ async function main(url: string) {
 async function receiveResponce<T>(req: Got.CancelableRequest<Got.Response<T>>, maxSize: number) {
 	// 応答ヘッダでサイズチェック
 	req.on('response', (res: Got.Response) => {
+		console.log(`httpVersion: ${res.httpVersion}`);
+		console.log(`${inspect(res.timings)}`);
+
 		const contentLength = res.headers['content-length'];
 		if (contentLength != null) {
 			const size = Number(contentLength);
@@ -73,18 +75,6 @@ async function receiveResponce<T>(req: Got.CancelableRequest<Got.Response<T>>, m
 	});
 
 	return res;
-}
-
-/**
- * agent を URL から設定する beforeRequest hook
- */
-function beforeRequestHook(options: Got.NormalizedOptions) {
-	options.request = (url: URL, opt: http.RequestOptions, callback?: (response: any) => void) => {
-		const requestFunc = url.protocol === 'http:' ? http.request : https.request;
-		opt.agent = getAgentByUrl(url, false);
-		const clientRequest = requestFunc(url, opt, callback) as http.ClientRequest;
-		return clientRequest;
-	};
 }
 
 const args = process.argv.slice(2);
