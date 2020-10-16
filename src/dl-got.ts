@@ -26,7 +26,7 @@ async function main(url: string, path: string) {
 			send: timeout,
 			request: operationTimeout,	// whole operation timeout
 		},
-		http2: true,
+		http2: false,
 		agent: {
 			http: httpAgent,
 			https: httpsAgent,
@@ -59,7 +59,9 @@ async function main(url: string, path: string) {
 		}
 	});
 
+	console.log(`pipeline start`);
 	await pipeline(req, fs.createWriteStream(path));
+	console.log(`pipeline end`);
 }
 
 const args = process.argv.slice(2);
