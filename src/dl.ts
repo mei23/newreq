@@ -5,6 +5,7 @@ import * as fs from 'fs';
 import * as stream from 'stream';
 import * as util from 'util';
 import { AbortController } from 'abort-controller';
+import { TimeoutStream } from './timeout-stream';
 
 const pipeline = util.promisify(stream.pipeline);
 
@@ -18,7 +19,7 @@ async function main(url: string, path: string) {
 		headers: {
 			Accept: '*/*',
 		},
-		timeout: 3 * 1000,
+		timeout: 30 * 1000,
 		signal: controller.signal,
 		agent: u => u.protocol == 'http:' ? httpAgent : httpsAgent
 	});
@@ -29,7 +30,11 @@ async function main(url: string, path: string) {
 	const contentLength = res.headers.get('content-length');
 	const expectedLength = contentLength != null ? Number(contentLength) : null;
 
-	await pipeline(res.body, fs.createWriteStream(path));
+	await pipeline(
+		res.body,
+		new TimeoutStream(5 * 1000, () => controller.abort()),
+		fs.createWriteStream(path)
+	);
 
 	// 可能ならばサイズ比較
 	const actualLength = (await util.promisify(fs.stat)(path)).size;
