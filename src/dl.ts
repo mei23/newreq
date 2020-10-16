@@ -10,16 +10,20 @@ import { TimeoutStream } from './timeout-stream';
 const pipeline = util.promisify(stream.pipeline);
 
 async function main(url: string, path: string) {
+	const wholeOperationTimeout = 60 * 1000;
+	const responseTimeout = 10 * 1000;
+	const readTimeout = 5 * 1000;
+
 	const controller = new AbortController();
 	setTimeout(() => {
 		controller.abort();
-	}, 60 * 1000);
+	}, wholeOperationTimeout);
 
 	const res = await fetch(url, {
 		headers: {
 			Accept: '*/*',
 		},
-		timeout: 30 * 1000,
+		timeout: responseTimeout,
 		signal: controller.signal,
 		agent: u => u.protocol == 'http:' ? httpAgent : httpsAgent
 	});
@@ -32,7 +36,7 @@ async function main(url: string, path: string) {
 
 	await pipeline(
 		res.body,
-		new TimeoutStream(5 * 1000, () => controller.abort()),
+		new TimeoutStream(readTimeout, () => controller.abort()),
 		fs.createWriteStream(path)
 	);
 
