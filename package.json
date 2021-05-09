@@ -6,6 +6,10 @@
   "scripts": {
     "build": "tsc"
   },
+  "resolutions": {
+    "http-proxy-agent/agent-base": "^6.0.2",
+    "https-proxy-agent/agent-base": "^6.0.2"
+  },
   "dependencies": {
     "@types/node": "14.0.23",
     "@types/node-fetch": "^2.5.7",
