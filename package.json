@@ -15,7 +15,7 @@
     "@types/node-fetch": "^2.5.7",
     "@types/superagent": "^4.1.8",
     "abort-controller": "^3.0.0",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "cacheable-lookup": "6.0.0",
     "got": "^11.5.1",
     "http-proxy-agent": "^4.0.1",
