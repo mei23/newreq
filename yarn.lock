@@ -117,6 +117,11 @@ buffer-from@^1.0.0:
   resolved "https://registry.yarnpkg.com/buffer-from/-/buffer-from-1.1.1.tgz#32713bc028f75c02fdb710d7c7bcec1f2c6070ef"
   integrity sha512-MQcXEUbCKtEo7bhqEs6560Hyd4XaovZlO/k9V3hjVUF/zwW7KBVdSK4gIt/bzwS9MbR5qob+F5jusZsb0YQK2A==
 
+cacheable-lookup@6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/cacheable-lookup/-/cacheable-lookup-6.0.0.tgz#6fd7e364a0929ee50af00843aaf6e31b9b9f200e"
+  integrity sha512-5qeyMn8/BERrUPdIfcOLkdMrwltVbxIpgnYM61OLWOg3BuSSh9HrkUtTTRxYthQpBrocvYqD0tJ7vU0y6T7OWw==
+
 cacheable-lookup@^5.0.3:
   version "5.0.3"
   resolved "https://registry.yarnpkg.com/cacheable-lookup/-/cacheable-lookup-5.0.3.tgz#049fdc59dffdd4fc285e8f4f82936591bd59fec3"

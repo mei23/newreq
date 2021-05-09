@@ -1,8 +1,13 @@
 import * as http from 'http';
 import * as https from 'https';
-const cache = require('lookup-dns-cache');
+import CacheableLookup from 'cacheable-lookup';
 import { HttpProxyAgent } from 'http-proxy-agent';
 import { HttpsProxyAgent } from 'https-proxy-agent';
+
+const cache = new CacheableLookup({
+	errorTtl: 30,
+	lookup: false,	// nativeのdns.lookupにfallbackしない
+});
 
 const config = {
 	proxy: undefined as any
@@ -24,7 +29,7 @@ const _https = new https.Agent({
 	keepAlive: true,
 	keepAliveMsecs: 30 * 1000,
 	lookup: cache.lookup,
-});
+} as https.AgentOptions);
 
 /**
  * Get http proxy or non-proxy agent
