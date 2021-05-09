@@ -5,7 +5,8 @@ import { HttpProxyAgent } from 'http-proxy-agent';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 
 const cache = new CacheableLookup({
-	errorTtl: 30,
+	maxTtl: 3600,	// 1hours
+	errorTtl: 30,	// 30seconds
 	lookup: false,	// nativeのdns.lookupにfallbackしない
 });
 
