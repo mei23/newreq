@@ -286,7 +286,15 @@ http-cache-semantics@^4.0.0:
   resolved "https://registry.yarnpkg.com/http-cache-semantics/-/http-cache-semantics-4.1.0.tgz#49e91c5cbf36c9b94bcfcd71c23d5249ec74e390"
   integrity sha512-carPklcUh7ROWRK7Cv27RPtdhYhUsela/ue5/jKzjegVvXDqM2ILE9Q2BGn9JZJh1g87cp56su/FgQSzcWS8cQ==
 
-http2-wrapper@1.0.0-beta.5.2, http2-wrapper@^1.0.0-beta.5.0:
+http2-wrapper@2.1.4:
+  version "2.1.4"
+  resolved "https://registry.yarnpkg.com/http2-wrapper/-/http2-wrapper-2.1.4.tgz#ef114c049a48862ed798552b75548edd236b7a84"
+  integrity sha512-On8RTSivn1IdX/rSjQmFV2pVfH/t8juFy4fjAs4Rp1naYHS10JmfMpChRrq62YQT5dlx09YWxXjiNck3Abld2Q==
+  dependencies:
+    quick-lru "^5.1.1"
+    resolve-alpn "^1.2.0"
+
+http2-wrapper@^1.0.0-beta.5.0:
   version "1.0.0-beta.5.2"
   resolved "https://registry.yarnpkg.com/http2-wrapper/-/http2-wrapper-1.0.0-beta.5.2.tgz#8b923deb90144aea65cf834b016a340fc98556f3"
   integrity sha512-xYz9goEyBnC8XwXDTuC/MZ6t+MrKVQZOk4s7+PaDkwIsQd8IwqvM+0M6bA/2lvG8GHXcPdf+MejTUeO2LCPCeQ==
@@ -438,10 +446,10 @@ request-promise-native@1.0.9:
     stealthy-require "^1.1.1"
     tough-cookie "^2.3.3"
 
-resolve-alpn@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/resolve-alpn/-/resolve-alpn-1.0.0.tgz#745ad60b3d6aff4b4a48e01b8c0bdc70959e0e8c"
-  integrity sha512-rTuiIEqFmGxne4IovivKSDzld2lWW9QCjqv80SYjPgf+gS35eaCAjaP54CCwGAwBtnCsvNLYtqxe1Nw+i6JEmA==
+resolve-alpn@^1.0.0, resolve-alpn@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/resolve-alpn/-/resolve-alpn-1.2.0.tgz#058bb0888d1cd4d12474e9a4b6eb17bdd5addc44"
+  integrity sha512-e4FNQs+9cINYMO5NMFc6kOUCdohjqFPSgMuwuZAOUWqrfWsen+Yjy5qZFkV5K7VO7tFSLKcUL97olkED7sCBHA==
 
 responselike@^2.0.0:
   version "2.0.0"
