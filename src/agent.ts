@@ -1,10 +1,10 @@
-import { HttpProxyAgent, HttpsProxyAgent } from 'hpagent';
 import * as http from 'http';
 import * as https from 'https';
+import { HttpProxyAgent, HttpsProxyAgent } from 'hpagent';
 import { cacheableLookup, limitedLookup } from './dns';
 
 const config = {
-	proxy: null
+	proxy: process.env.NR_Proxy
 };
 
 const normalAgentOptions = {
