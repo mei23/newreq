@@ -1,72 +1,59 @@
 import * as http from 'http';
 import * as https from 'https';
+import CacheableLookup from 'cacheable-lookup';
 import { HttpProxyAgent, HttpsProxyAgent } from 'hpagent';
-import { cacheableLookup, limitedLookup } from './dns';
+
+const cache = new CacheableLookup({
+	maxTtl: 3600,	// 1hours
+	errorTtl: 30,	// 30seconds
+	lookup: false,	// nativeのdns.lookupにfallbackしない
+});
 
 const config = {
-	proxy: process.env.NR_Proxy
+	proxy: undefined as any
 };
 
-const normalAgentOptions = {
+/**
+ * Get http non-proxy agent
+ */
+const _http = new http.Agent({
 	keepAlive: true,
 	keepAliveMsecs: 30 * 1000,
-	lookup: cacheableLookup,
-} as http.AgentOptions;
+	lookup: cache.lookup,	// DefinitelyTyped issues
+} as http.AgentOptions);
 
-const limitedAgentOptions = {
+/**
+ * Get https non-proxy agent
+ */
+const _https = new https.Agent({
 	keepAlive: true,
 	keepAliveMsecs: 30 * 1000,
-	lookup: limitedLookup,
-} as http.AgentOptions;
+	lookup: cache.lookup,
+} as https.AgentOptions);
 
-const proxyAgentOptions = {
-	keepAlive: true,
-	keepAliveMsecs: 30 * 1000,
-	maxSockets: 256,
-	maxFreeSockets: 256,
-	scheduling: 'lifo' as const,
-	proxy: config.proxy!
-};
-
-// Agents (without proxy)
-const _normalHttp   = new http.Agent(normalAgentOptions);
-const _normalhttps  = new https.Agent(normalAgentOptions);
-const _limitedHttp  = new http.Agent(limitedAgentOptions);	// with limited DNS lookup
-const _limitedHttps = new https.Agent(limitedAgentOptions);	// with limited DNS lookup
-
-// Agents (with proxy)
+/**
+ * Get http proxy or non-proxy agent
+ */
 export const httpAgent = config.proxy
-	? new HttpProxyAgent(proxyAgentOptions)
-	: _normalHttp;
+	? new HttpProxyAgent(config.proxy)
+	: _http;
 
+/**
+ * Get https proxy or non-proxy agent
+ */
 export const httpsAgent = config.proxy
-	? new HttpsProxyAgent(proxyAgentOptions)
-	: _normalhttps;
-
-export const limitedHttpAgent = config.proxy
-	? new HttpProxyAgent(proxyAgentOptions)
-	: _limitedHttp;
-
-export const limitedHttpsAgent = config.proxy
-	? new HttpsProxyAgent(proxyAgentOptions)
-	: _limitedHttps;
+	? new HttpsProxyAgent(config.proxy)
+	: _https;
 
 /**
  * Get agent by URL
  * @param url URL
  * @param bypassProxy Allways bypass proxy
- * @param allowPrivate Allow private destination address
  */
-export function getAgentByUrl(url: URL, bypassProxy = false, allowPrivate = false): http.Agent | https.Agent {
-	const enableLimitedLookup = (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'test') && !allowPrivate;
-
+export function getAgentByUrl(url: URL, bypassProxy = false): http.Agent | https.Agent {
 	if (bypassProxy) {
-		return enableLimitedLookup
-			? url.protocol == 'http:' ? _limitedHttp : _limitedHttps
-			: url.protocol == 'http:' ? _normalHttp : _normalhttps;
+		return url.protocol == 'http:' ? _http : _https;
 	} else {
-		return enableLimitedLookup
-			? url.protocol == 'http:' ? limitedHttpAgent : limitedHttpsAgent
-			: url.protocol == 'http:' ? httpAgent : httpsAgent;
+		return url.protocol == 'http:' ? httpAgent : httpsAgent;
 	}
 }
