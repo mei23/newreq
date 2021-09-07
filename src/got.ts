@@ -1,13 +1,14 @@
-import { getAgentByUrl } from './agent';
+import { getAgentByUrl, httpAgent, httpsAgent } from './agent';
 import { inspect } from 'util';
 import got from 'got';
 import * as Got from 'got';
 import * as http from 'http';
 import * as https from 'https';
+import { StatusError } from './status-error';
 
 async function main(url: string) {
 	const timeout = 5 * 1000;
-	const maxSize = 1 * 1024 * 1024;
+	const maxSize = 1 ;
 
 	const req = got.post<any>(url, {
 		json: {
@@ -19,10 +20,11 @@ async function main(url: string) {
 		},
 		responseType: 'json',
 		timeout,
-		http2: false,
-		hooks: {
-			beforeRequest: [ beforeRequestHook ],
+		agent: {
+			http: httpAgent,
+			https: httpsAgent,
 		},
+		http2: false,
 		retry: 0,	// デフォルトでリトライするようになってる
 	});
 	
@@ -43,8 +45,7 @@ async function receiveResponce<T>(req: Got.CancelableRequest<Got.Response<T>>, m
 		if (contentLength != null) {
 			const size = Number(contentLength);
 			if (size > maxSize) {
-				console.log(`maxSize exceeded (${size} > ${maxSize}) on response`);
-				req.cancel();
+				req.cancel(`maxSize exceeded (${size} > ${maxSize}) on response`);
 			}
 		}
 	});
@@ -52,21 +53,14 @@ async function receiveResponce<T>(req: Got.CancelableRequest<Got.Response<T>>, m
 	// 受信中のデータでサイズチェック
 	req.on('downloadProgress', (progress: Got.Progress) => {
 		if (progress.transferred > maxSize) {
-			console.log(`maxSize exceeded (${progress.transferred} > ${maxSize}) on downloadProgress`);
-			req.cancel();
+			req.cancel(`maxSize exceeded (${progress.transferred} > ${maxSize}) on response`);
 		}
 	});
 
 	// 応答取得 with ステータスコードエラーの整形
 	const res = await req.catch(e => {
-		if (e.name === 'HTTPError') {
-			const statusCode = (e as Got.HTTPError).response.statusCode;
-			const statusMessage = (e as Got.HTTPError).response.statusMessage;
-			throw {
-				name: `StatusError`,
-				statusCode,
-				message: `${statusCode} ${statusMessage}`,
-			};
+		if (e instanceof Got.HTTPError) {
+			throw new StatusError(`${e.response.statusCode} ${e.response.statusMessage}`, e.response.statusCode, e.response.statusMessage);
 		} else {
 			throw e;
 		}
@@ -75,21 +69,10 @@ async function receiveResponce<T>(req: Got.CancelableRequest<Got.Response<T>>, m
 	return res;
 }
 
-/**
- * agent を URL から設定する beforeRequest hook
- */
-function beforeRequestHook(options: Got.NormalizedOptions) {
-	options.request = (url: URL, opt: http.RequestOptions, callback?: (response: any) => void) => {
-		const requestFunc = url.protocol === 'http:' ? http.request : https.request;
-		opt.agent = getAgentByUrl(url, false);
-		const clientRequest = requestFunc(url, opt, callback) as http.ClientRequest;
-		return clientRequest;
-	};
-}
-
 const args = process.argv.slice(2);
 const url = args[0];
 
 main(url).catch(e => {
 	console.log(inspect(e));
+	console.log(`${e}`);
 })

@@ -1,6 +1,7 @@
 import { httpAgent, httpsAgent } from './agent';
 import { inspect } from 'util';
 import fetch from 'node-fetch';
+import { StatusError } from './status-error';
 
 async function main(url: string) {
 	const json = await fetch(url, {
@@ -24,7 +25,7 @@ async function main(url: string) {
 	}).then(res => {
 		// 2xx以外をエラーにしたければハンドルする必要がある
 		if (!res.ok) {
-			throw `${res.status} ${res.statusText}`;
+			throw new StatusError(`${res.status} ${res.statusText}`, res.status, res.statusText);
 			// 404 Not Found
 		} else {
 			return res.json();
@@ -39,4 +40,5 @@ const url = args[0];
 
 main(url).catch(e => {
 	console.log(inspect(e));
+	console.log(`${e}`);
 })

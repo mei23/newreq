@@ -7,6 +7,7 @@ import * as util from 'util';
 import { getAgentByUrl } from './agent';
 import * as http from 'http';
 import * as https from 'https';
+import { StatusError } from './status-error';
 
 const pipeline = util.promisify(stream.pipeline);
 
@@ -46,27 +47,25 @@ async function main(url: string, path: string) {
 		if (contentLength != null) {
 			const size = Number(contentLength);
 			if (size > maxSize) {
-				console.log(`maxSize exceeded (${size} > ${maxSize}) on response`);
-				req.destroy();
+				req.destroy(new Error(`maxSize exceeded (${size} > ${maxSize}) on response`));
 			}
 		}
 	}).on('downloadProgress', (progress: Got.Progress) => {
 		if (progress.transferred > maxSize) {
-			console.log(`maxSize exceeded (${progress.transferred} > ${maxSize}) on downloadProgress`);
-			req.destroy();
-		}
-	}).on('error', (e: any) => {
-		if (e.name === 'HTTPError') {
-			const statusCode = e.response?.statusCode;
-			const statusMessage = e.response?.statusMessage;
-			e.name = `StatusError`;
-			e.statusCode = statusCode;
-			e.message = `${statusCode} ${statusMessage}`;
+			req.destroy(new Error(`maxSize exceeded (${progress.transferred} > ${maxSize}) on downloadProgress`));
 		}
 	});
 
 	console.log(`pipeline start`);
-	await pipeline(req, fs.createWriteStream(path));
+	try {
+		await pipeline(req, fs.createWriteStream(path));
+	} catch (e) {
+		if (e instanceof Got.HTTPError) {
+			throw new StatusError(`${e.response.statusCode} ${e.response.statusMessage}`, e.response.statusCode, e.response.statusMessage);
+		} else {
+			throw e;
+		}
+	}
 	console.log(`pipeline end`);
 }
 
@@ -76,4 +75,5 @@ const path = args[1];
 
 main(url, path).catch(e => {
 	console.log(`error: ${inspect(e)}`);
+	console.log(`${e}`);
 });
