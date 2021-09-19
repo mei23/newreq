@@ -13,8 +13,8 @@ const RESPONSE_TIMEOUT = 30 * 1000;
 const OPERATION_TIMEOUT = 60 * 1000;
 const MAX_RESPONSE_SIZE = 10 * 1024 * 1024;
 
-export async function getJson(url: string, accept = 'application/json, */*') {
-	const body = await getResponse({
+export async function getJson(url: string, accept = 'application/json, */*'): Promise<any> {
+	const res = await getResponse({
 		url,
 		method: 'GET',
 		headers: {
@@ -23,11 +23,11 @@ export async function getJson(url: string, accept = 'application/json, */*') {
 		timeout: 10 * 1000,
 	});
 
-	return await JSON.parse(body);
+	return await JSON.parse(res.body);
 }
 
-export async function getHtml(url: string, accept = 'text/html, */*') {
-	const body = await getResponse({
+export async function getHtml(url: string, accept = 'text/html, */*'): Promise<string> {
+	const res = await getResponse({
 		url,
 		method: 'GET',
 		headers: {
@@ -36,7 +36,7 @@ export async function getHtml(url: string, accept = 'text/html, */*') {
 		timeout: 10 * 1000,
 	});
 
-	return await body;
+	return await res.body;
 }
 
 export async function getResponse(args: { url: string, method: 'GET' | 'POST', body?: string, headers: Record<string, string>, timeout?: number, size?: number }) {
@@ -64,8 +64,7 @@ export async function getResponse(args: { url: string, method: 'GET' | 'POST', b
 		retry: 0,
 	});
 
-	const res = await receiveResponce(req, args.size || MAX_RESPONSE_SIZE);
-	return res.body;
+	return await receiveResponce(req, args.size || MAX_RESPONSE_SIZE);
 }
 
 /**
