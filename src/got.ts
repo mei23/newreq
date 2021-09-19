@@ -1,36 +1,71 @@
-import { getAgentByUrl, httpAgent, httpsAgent } from './agent';
+import { httpAgent, httpsAgent } from './agent';
 import { inspect } from 'util';
 import got from 'got';
 import * as Got from 'got';
-import * as http from 'http';
-import * as https from 'https';
 import { StatusError } from './status-error';
 
 async function main(url: string) {
-	const timeout = 5 * 1000;
-	const maxSize = 1 ;
+	const json = await getJson(url);
+	console.log(inspect(json));
+}
 
-	const req = got.post<any>(url, {
-		json: {
-			a: 'b'
-		},
+const RESPONSE_TIMEOUT = 30 * 1000;
+const OPERATION_TIMEOUT = 60 * 1000;
+const MAX_RESPONSE_SIZE = 10 * 1024 * 1024;
+
+export async function getJson(url: string, accept = 'application/json, */*') {
+	const body = await getResponse({
+		url,
+		method: 'GET',
 		headers: {
-			Accept: '*/*',
-			// 'Accept-Encoding': 'gzip, deflate, br', がデフォルト
+			Accept: accept
 		},
-		responseType: 'json',
-		timeout,
+		timeout: 10 * 1000,
+	});
+
+	return await JSON.parse(body);
+}
+
+export async function getHtml(url: string, accept = 'text/html, */*') {
+	const body = await getResponse({
+		url,
+		method: 'GET',
+		headers: {
+			Accept: accept
+		},
+		timeout: 10 * 1000,
+	});
+
+	return await body;
+}
+
+export async function getResponse(args: { url: string, method: 'GET' | 'POST', body?: string, headers: Record<string, string>, timeout?: number, size?: number }) {
+	const timeout = args.timeout || RESPONSE_TIMEOUT;
+	const operationTimeout = args.timeout ? args.timeout * 6 : OPERATION_TIMEOUT;
+
+	const req = got<string>(args.url, {
+		method: args.method,
+		headers: args.headers,
+		body: args.body,
+		timeout: {
+			lookup: timeout,
+			connect: timeout,
+			secureConnect: timeout,
+			socket: timeout,	// read timeout
+			response: timeout,
+			send: timeout,
+			request: operationTimeout,	// whole operation timeout
+		},
 		agent: {
 			http: httpAgent,
 			https: httpsAgent,
 		},
 		http2: false,
-		retry: 0,	// デフォルトでリトライするようになってる
+		retry: 0,
 	});
-	
-	const res = await receiveResponce(req, maxSize);
 
-	console.log(inspect(res.body));
+	const res = await receiveResponce(req, args.size || MAX_RESPONSE_SIZE);
+	return res.body;
 }
 
 /**
