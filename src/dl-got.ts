@@ -51,7 +51,7 @@ async function main(url: string, path: string) {
 			}
 		}
 	}).on('downloadProgress', (progress: Got.Progress) => {
-		if (progress.transferred > maxSize) {
+		if (progress.transferred > maxSize && progress.percent !== 1) {
 			req.destroy(new Error(`maxSize exceeded (${progress.transferred} > ${maxSize}) on downloadProgress`));
 		}
 	});
