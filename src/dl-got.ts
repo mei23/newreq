@@ -51,6 +51,7 @@ async function main(url: string, path: string) {
 			}
 		}
 	}).on('downloadProgress', (progress: Got.Progress) => {
+		// https://github.com/sindresorhus/got/blob/f0b7bc5135bc30e50e93c52420dbd862e5b67b26/documentation/examples/advanced-creation.js#L60
 		if (progress.transferred > maxSize && progress.percent !== 1) {
 			req.destroy(new Error(`maxSize exceeded (${progress.transferred} > ${maxSize}) on downloadProgress`));
 		}
