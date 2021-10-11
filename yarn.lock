@@ -286,10 +286,10 @@ http-cache-semantics@^4.0.0:
   resolved "https://registry.yarnpkg.com/http-cache-semantics/-/http-cache-semantics-4.1.0.tgz#49e91c5cbf36c9b94bcfcd71c23d5249ec74e390"
   integrity sha512-carPklcUh7ROWRK7Cv27RPtdhYhUsela/ue5/jKzjegVvXDqM2ILE9Q2BGn9JZJh1g87cp56su/FgQSzcWS8cQ==
 
-http2-wrapper@2.1.4:
-  version "2.1.4"
-  resolved "https://registry.yarnpkg.com/http2-wrapper/-/http2-wrapper-2.1.4.tgz#ef114c049a48862ed798552b75548edd236b7a84"
-  integrity sha512-On8RTSivn1IdX/rSjQmFV2pVfH/t8juFy4fjAs4Rp1naYHS10JmfMpChRrq62YQT5dlx09YWxXjiNck3Abld2Q==
+http2-wrapper@2.1.9:
+  version "2.1.9"
+  resolved "https://registry.yarnpkg.com/http2-wrapper/-/http2-wrapper-2.1.9.tgz#d27b9475f132973a74b4ee50901b951ff6e56020"
+  integrity sha512-z5jPLkDXHsQM762XFo4XproHTXT0lMQscKCQMPGccHDzY0kNxmUxWyGkW66zB2RGAr9pF9Tzc5Dmmv8Uh8HW3Q==
   dependencies:
     quick-lru "^5.1.1"
     resolve-alpn "^1.2.0"
