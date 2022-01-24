@@ -15,7 +15,6 @@
     "cacheable-lookup": "6.0.4",
     "got": "11.5.1",
     "hpagent": "0.1.2",
-    "http2-wrapper": "2.1.4",
     "node-fetch": "2.6.1",
     "request-promise-native": "1.0.9",
     "superagent": "6.1.0",
