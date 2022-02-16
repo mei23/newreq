@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "@types/node": "16.7.1",
-    "@types/node-fetch": "2.5.12",
+    "@types/node-fetch": "2.6.1",
     "@types/superagent": "4.1.12",
     "abort-controller": "3.0.0",
     "axios": "0.21.1",
