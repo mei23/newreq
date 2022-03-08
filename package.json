@@ -15,7 +15,7 @@
     "cacheable-lookup": "6.0.4",
     "got": "11.5.1",
     "hpagent": "0.1.2",
-    "node-fetch": "2.6.1",
+    "node-fetch": "3.2.2",
     "request-promise-native": "1.0.9",
     "superagent": "6.1.0",
     "ts-node": "10.4.0",
