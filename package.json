@@ -7,7 +7,7 @@
     "build": "tsc"
   },
   "dependencies": {
-    "@types/node": "16.7.1",
+    "@types/node": "18.7.14",
     "@types/node-fetch": "2.5.12",
     "@types/superagent": "4.1.12",
     "abort-controller": "3.0.0",
