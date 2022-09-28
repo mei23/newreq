@@ -13,7 +13,7 @@
     "abort-controller": "3.0.0",
     "axios": "0.21.1",
     "cacheable-lookup": "6.0.4",
-    "got": "11.5.1",
+    "got": "12.5.1",
     "hpagent": "0.1.2",
     "node-fetch": "2.6.1",
     "request-promise-native": "1.0.9",
