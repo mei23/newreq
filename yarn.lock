@@ -276,10 +276,10 @@ got@11.5.1:
     p-cancelable "^2.0.0"
     responselike "^2.0.0"
 
-hpagent@0.1.2:
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/hpagent/-/hpagent-0.1.2.tgz#cab39c66d4df2d4377dbd212295d878deb9bdaa9"
-  integrity sha512-ePqFXHtSQWAFXYmj+JtOTHr84iNrII4/QRlAAPPE+zqnKy4xJo7Ie1Y4kC7AdB+LxLxSTTzBMASsEcy0q8YyvQ==
+hpagent@1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/hpagent/-/hpagent-1.1.0.tgz#9ff305d6716652bbfe9e300d1865d2c51f284f47"
+  integrity sha512-bgJcBmNTZaJO03xtXOTNfoFEf/3VwoZ/gJ2O4ekTCZu4LSFtfzQFrJ0kjq8ZSS0+IdghXqQIiDUnpp0eUR9IJg==
 
 http-cache-semantics@^4.0.0:
   version "4.1.0"
