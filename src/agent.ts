@@ -1,7 +1,8 @@
 import * as http from 'http';
 import * as https from 'https';
 import CacheableLookup from 'cacheable-lookup';
-import { HttpProxyAgent, HttpsProxyAgent } from 'hpagent';
+import { HttpProxyAgent } from 'http-proxy-agent';
+import { HttpsProxyAgent } from 'https-proxy-agent';
 
 const cache = new CacheableLookup({
 	maxTtl: 3600,	// 1hours
