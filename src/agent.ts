@@ -1,14 +1,8 @@
 import * as http from 'http';
 import * as https from 'https';
-import CacheableLookup from 'cacheable-lookup';
 import { HttpProxyAgent } from 'http-proxy-agent';
 import { HttpsProxyAgent } from 'https-proxy-agent';
-
-const cache = new CacheableLookup({
-	maxTtl: 3600,	// 1hours
-	errorTtl: 30,	// 30seconds
-	lookup: false,	// nativeのdns.lookupにfallbackしない
-});
+import { lookup } from './dns';
 
 const config = {
 	proxy: undefined as any
@@ -20,7 +14,7 @@ const config = {
 const _http = new http.Agent({
 	keepAlive: true,
 	keepAliveMsecs: 30 * 1000,
-	lookup: cache.lookup,	// DefinitelyTyped issues
+	lookup: lookup,	// DefinitelyTyped issues
 } as http.AgentOptions);
 
 /**
@@ -29,7 +23,7 @@ const _http = new http.Agent({
 const _https = new https.Agent({
 	keepAlive: true,
 	keepAliveMsecs: 30 * 1000,
-	lookup: cache.lookup,
+	lookup: lookup,
 } as https.AgentOptions);
 
 /**
