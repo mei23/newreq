@@ -26,6 +26,8 @@ const connector = undici.buildConnector({
 	keepAlive: true,
 });
 
+// abort
+
 const nonProxiedAgent = new undici.Agent({
 	...clientDefaults,
 	connect: (opts, cb) => {
@@ -64,7 +66,7 @@ function getAgentByUrl(url: string, bypassProxy = false): undici.Agent | undici.
 }
 
 async function fetch(url: string) {
-	const json = await undici.fetch(url, {
+	const res = await undici.fetch(url, {
 		method: 'get',
 		//body: JSON.stringify({
 		//	a: 'b',
@@ -80,23 +82,18 @@ async function fetch(url: string) {
 	.catch((error: any) => {
 		// エラーはそんなに長くないのでそのままthrowしても大丈夫
 		throw error;
-	})
-	.then(res => {
-		res.url
-		// 2xx以外をエラーにしたければハンドルする必要がある
-		if (!res.ok) {
-			throw new StatusError(`${res.status} ${res.statusText}`, res.status, res.statusText);
-			// 404 Not Found
-		} else {
-			return res.json();
-		}
 	});
 
-	console.log(inspect(json));
+	// 2xx以外をエラーにしたければハンドルする必要がある
+	if (!res.ok) {
+		throw new StatusError(`${res.status} ${res.statusText}`, res.status, res.statusText);
+	} else {
+		return res.json();
+	}
 }
 
 async function main(url: string) {
-	await fetch(url);
+	console.log(await fetch(url));
 }
 
 const args = process.argv.slice(2);
