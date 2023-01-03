@@ -26,8 +26,7 @@ const connector = undici.buildConnector({
 	keepAlive: true,
 });
 
-
-const pnonProxiedAgent = new undici.Agent({
+const nonProxiedAgent = new undici.Agent({
 	...clientDefaults,
 	connect: (opts, cb) => {
 		console.log('connect');
@@ -51,41 +50,7 @@ const pnonProxiedAgent = new undici.Agent({
 	},
 });
 
-
-
-function getNonProxiedAgent(options: undici.Agent.Options = {}) {
-	console.log('new Agent');
-	const nonProxiedAgent = new undici.Agent({
-		...clientDefaults,
-		...options,
-		connect: (opts, cb) => {
-			connector(opts, (err, socket) => {
-				if (err) {
-					cb(err, null);
-					return;
-				}
-	
-				// ここでチェック
-				console.log(`${socket.localPort} => ${socket.remoteAddress}`);
-	
-				if (false) {
-					socket.destroy();
-					cb(new Error('Invalid ip'), null);
-					return;
-				}
-	
-				cb(null, socket)
-			});
-		},
-	});
-
-	return nonProxiedAgent;
-}
-
-
-
-
-function getAgentByUrl(url: string, bypassProxy = false, nonProxiedOptions: undici.Agent.Options): undici.Agent | undici.ProxyAgent {
+function getAgentByUrl(url: string, bypassProxy = false): undici.Agent | undici.ProxyAgent {
 	const useProxy = !bypassProxy && config.proxy != null;
 
 	if (useProxy) {
@@ -94,31 +59,23 @@ function getAgentByUrl(url: string, bypassProxy = false, nonProxiedOptions: undi
 			uri: config.proxy,
 		});
 	} else {
-		return getNonProxiedAgent(nonProxiedOptions);
+		return nonProxiedAgent;
 	}
 }
 
 async function fetch(url: string) {
 	const json = await undici.fetch(url, {
-		method: 'post',
-		body: JSON.stringify({
-			a: 'b',
-		}),
+		method: 'get',
+		//body: JSON.stringify({
+		//	a: 'b',
+		//}),
 		headers: {
 			Accept: '*/*',
 			'User-Agent': 'Client',
 			'Content-Type': 'application/json',
 			// 'Accept-Encoding': 'br, gzip, deflate', がデフォルト
 		},
-		dispatcher: pnonProxiedAgent,
-		/*
-		dispatcher: getAgentByUrl(url, false, {
-			headersTimeout: 10 * 1000,
-			bodyTimeout: 60 * 1000,
-			maxResponseSize: 10 * 1000 * 1000,
-		}),
-		*/
-		//timeout: 3 * 1000,
+		dispatcher: getAgentByUrl(url, false),
 	})
 	.catch((error: any) => {
 		// エラーはそんなに長くないのでそのままthrowしても大丈夫
@@ -139,7 +96,6 @@ async function fetch(url: string) {
 }
 
 async function main(url: string) {
-	await fetch(url);
 	await fetch(url);
 }
 
